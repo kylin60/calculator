@@ -154,7 +154,14 @@ public class MainActivity extends AppCompatActivity {
         bt[14].setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Eval();
+                if(signal != "#"){
+                    // 空操作
+                    ;
+                }
+                else {
+                    Eval();
+                    count=0;
+                }
             }
         });
         bt[15].setOnClickListener(new View.OnClickListener() {
@@ -162,6 +169,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                txt1.setText("");
                txt2.setText("");
+               signal="#";
                count = 0;
             }
         });
@@ -252,10 +260,15 @@ public class MainActivity extends AppCompatActivity {
                 txt1.setText("");
             }
         }
+        else{
+            // 显示
+            txt2.setText(txt1.getText());
+            txt1.setText("");
+        }
 
     }
 
-    // 子函数待定，心情好就写
+    // 子函数
     private void SubEval(){
 
     }
@@ -286,12 +299,23 @@ public class MainActivity extends AppCompatActivity {
 
     // 加运算符
     private String AddSignal(Button source) {
-
-        // 运算符变换
         if(signal != "#"){
+
+            // 运算符变换
             int index = (""+txt1.getText()).indexOf(signal);
             signal = source.getText()+"";
             return (""+txt1.getText()).substring(0,index)+signal;
+        }else if((txt1.getText()+"").length() == 0 &&
+                 (txt2.getText()+"").length() > 0) {
+
+            // 支持间接连运算（两个文本框）
+            String temp;
+            // 获取符号
+            signal = source.getText() + "";
+            temp=(txt2.getText()+"")+signal;
+            // 置空文本2
+            txt2.setText("");
+            return temp;
         } else {
 
             // 只允许两个数进行运算
