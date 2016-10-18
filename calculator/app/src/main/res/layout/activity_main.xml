@@ -134,14 +134,6 @@
         android:id="@+id/button_clear" />
 
     <Button
-        android:text="="
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/button7"
-        android:layout_toStartOf="@+id/button_mul"
-        android:id="@+id/button_out" />
-
-    <Button
         android:text="-"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -187,6 +179,24 @@
         android:layout_marginTop="96dp"
         android:layout_below="@+id/ScrollView2"
         android:layout_alignParentStart="true" />
+
+    <Button
+        android:text="="
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/button9"
+        android:id="@+id/button16"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true" />
+
+    <Button
+        android:text="."
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/button_out"
+        android:layout_alignBaseline="@+id/button_sub"
+        android:layout_alignBottom="@+id/button_sub"
+        android:layout_toEndOf="@+id/button7" />
 
 
 </RelativeLayout>
