@@ -16,8 +16,8 @@ import java.util.Stack;
 
 
 /**
- *  四则混合算法借鉴于网上 来自：http://www.cnblogs.com/woider/p/5331391.html
- *  代码包括Calculator类和ArithHelper类
+ *  四则混合算法借鉴于网上 来自：
+ *                              http://www.cnblogs.com/woider/p/5331391.html
  *
  */
 
@@ -28,15 +28,20 @@ import java.util.Stack;
  *  如果计算过程错误，将返回一个NaN
  */
 class Calculator {
-    private Stack<String> postfixStack = new Stack<String>();// 后缀式栈
-    private Stack<Character> opStack = new Stack<Character>();// 运算符栈
-    private int[] operatPriority = new int[] { 0, 3, 2, 1, -1, 1, 0, 2 };// 运用运算符ASCII码-40做索引的运算符优先级
+     // 后缀式栈
+    private Stack<String> postfixStack = new Stack<String>();
+     // 运算符栈
+    private Stack<Character> opStack = new Stack<Character>();
+     // 运用运算符ASCII码-40做索引的运算符优先级
+    private int[] operatPriority = new int[] { 0, 3, 2, 1, -1, 1, 0, 2 };
 
     public static double conversion(String expression) {
         double result = 0;
         Calculator cal = new Calculator();
         try {
+            //  格式化表达式
             expression = transform(expression);
+            //  运算
             result = cal.calculate(expression);
         } catch (Exception e) {
             // e.printStackTrace();
@@ -52,35 +57,17 @@ class Calculator {
      *
      * @param expression
      *            例如-2+-1*(-3E-2)-(-1) 被转为 ~2+~1*(~3E~2)-(~1)
-     * @return
      */
     private static String transform(String expression) {
-        char[] arr = expression.toCharArray();
-        for (int i = 0; i < arr.length; i++) {
-            if (arr[i] == '-') {
-                if (i == 0) {
-                    arr[i] = '~';
-                } else {
-                    char c = arr[i - 1];
-                    if (c == '+' || c == '-' || c == '*' || c == '/' || c == '(' || c == 'E' || c == 'e') {
-                        arr[i] = '~';
-                    }
-                }
-            }
-        }
-        if(arr[0]=='~'||arr[1]=='('){
-            arr[0]='-';
-            return "0"+new String(arr);
-        }else{
-            return new String(arr);
-        }
+        // 该App并无负数的输入，因此不部分舍去
+        return expression;
     }
 
     /**
      * 按照给定的表达式计算
      *
      * @param expression
-     *            要计算的表达式例如:5+12*(3+5)/7
+     *            要计算的表达式例如:5+12*3+5/7
      * @return
      */
     public double calculate(String expression) {
@@ -132,6 +119,12 @@ class Calculator {
                     }
                     opStack.pop();
                 } else {
+                    /**
+                     *   如果是有左括号，加入运算符栈  \
+                     *   如果当前运算符优先级低于先前  \
+                     *   运算符, 先前运算符退出符号栈  \
+                     *   进入后缀栈
+                     */
                     while (currentOp != '(' && peekOp != ',' && compare(currentOp, peekOp)) {
                         postfixStack.push(String.valueOf(opStack.pop()));
                         peekOp = opStack.peek();
@@ -147,9 +140,12 @@ class Calculator {
         if (count > 1 || (count == 1 && !isOperator(arr[currentIndex]))) {// 最后一个字符不是括号或者其他运算符的则加入后缀式栈中
             postfixStack.push(new String(arr, currentIndex, count));
         }
-
+        /**
+         *   将操作符栈中的剩余的元素添加到后缀式栈中
+         *   不包括 ， 符号
+         */
         while (opStack.peek() != ',') {
-            postfixStack.push(String.valueOf(opStack.pop()));// 将操作符栈中的剩余的元素添加到后缀式栈中
+            postfixStack.push(String.valueOf(opStack.pop()));
         }
     }
 
@@ -223,12 +219,6 @@ class ArithHelper {
      * @return 两个参数的和
      */
 
-    public static double add(double v1, double v2) {
-        java.math.BigDecimal b1 = new java.math.BigDecimal(Double.toString(v1));
-        java.math.BigDecimal b2 = new java.math.BigDecimal(Double.toString(v2));
-        return b1.add(b2).doubleValue();
-    }
-
     public static double add(String v1, String v2) {
         java.math.BigDecimal b1 = new java.math.BigDecimal(v1);
         java.math.BigDecimal b2 = new java.math.BigDecimal(v2);
@@ -242,12 +232,6 @@ class ArithHelper {
      * @param v2 减数
      * @return 两个参数的差
      */
-
-    public static double sub(double v1, double v2) {
-        java.math.BigDecimal b1 = new java.math.BigDecimal(Double.toString(v1));
-        java.math.BigDecimal b2 = new java.math.BigDecimal(Double.toString(v2));
-        return b1.subtract(b2).doubleValue();
-    }
 
     public static double sub(String v1, String v2) {
         java.math.BigDecimal b1 = new java.math.BigDecimal(v1);
@@ -265,12 +249,6 @@ class ArithHelper {
      * @return 两个参数的积
      */
 
-    public static double mul(double v1, double v2) {
-        java.math.BigDecimal b1 = new java.math.BigDecimal(Double.toString(v1));
-        java.math.BigDecimal b2 = new java.math.BigDecimal(Double.toString(v2));
-        return b1.multiply(b2).doubleValue();
-    }
-
     public static double mul(String v1, String v2) {
         java.math.BigDecimal b1 = new java.math.BigDecimal(v1);
         java.math.BigDecimal b2 = new java.math.BigDecimal(v2);
@@ -287,33 +265,12 @@ class ArithHelper {
      * @return 两个参数的商
      */
 
-    public static double div(double v1, double v2) {
-        return div(v1, v2, DEF_DIV_SCALE);
-    }
-
     public static double div(String v1, String v2) {
         java.math.BigDecimal b1 = new java.math.BigDecimal(v1);
         java.math.BigDecimal b2 = new java.math.BigDecimal(v2);
         return b1.divide(b2, DEF_DIV_SCALE, java.math.BigDecimal.ROUND_HALF_UP).doubleValue();
     }
 
-    /**
-     * 提供（相对）精确的除法运算。当发生除不尽的情况时，由scale参数指 定精度，以后的数字四舍五入。
-     *
-     * @param v1 被除数
-     * @param v2 除数
-     * @param scale 表示表示需要精确到小数点以后几位。
-     * @return 两个参数的商
-     */
-
-    public static double div(double v1, double v2, int scale) {
-        if (scale < 0) {
-            throw new IllegalArgumentException("The   scale   must   be   a   positive   integer   or   zero");
-        }
-        java.math.BigDecimal b1 = new java.math.BigDecimal(Double.toString(v1));
-        java.math.BigDecimal b2 = new java.math.BigDecimal(Double.toString(v2));
-        return b1.divide(b2, scale, java.math.BigDecimal.ROUND_HALF_UP).doubleValue();
-    }
 
     /**
      * 提供精确的小数位四舍五入处理。
@@ -322,15 +279,6 @@ class ArithHelper {
      * @param scale 小数点后保留几位
      * @return 四舍五入后的结果
      */
-
-    public static double round(double v, int scale) {
-        if (scale < 0) {
-            throw new IllegalArgumentException("The   scale   must   be   a   positive   integer   or   zero");
-        }
-        java.math.BigDecimal b = new java.math.BigDecimal(Double.toString(v));
-        java.math.BigDecimal one = new java.math.BigDecimal("1");
-        return b.divide(one, scale, java.math.BigDecimal.ROUND_HALF_UP).doubleValue();
-    }
 
     public static double round(String v, int scale) {
         if (scale < 0) {
@@ -350,9 +298,6 @@ public class MainActivity extends AppCompatActivity {
     private int count=0;
     private int pointFlag;
     private int _pointFlag;
-    // 两个运算栈
-    //private Stack<String> staNumber;
-    // private Stack<String> staSignal;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -517,9 +462,17 @@ public class MainActivity extends AppCompatActivity {
         bt[16].setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(signal != "#" || _pointFlag == 1){
+                if (!(txt1.getText().toString()).contains("+")     &&
+                        !(txt1.getText().toString()).contains("-") &&
+                        !(txt1.getText().toString()).contains("*") &&
+                        !(txt1.getText().toString()).contains("/") ){
                     // 空操作
-                    ;
+                }
+                else if(_pointFlag==1){
+                    // 空操作
+                }
+                else if(signal!="#"){
+                    // 空操作
                 }
                 else {
                     Work();
@@ -540,105 +493,6 @@ public class MainActivity extends AppCompatActivity {
         txt1.setText("");
     }
 
-    // 更新中... eval函数暂不使用
-    // eval运算函数
-    private void Eval() {
-        String buffer=txt1.getText()+"";  String frontStr;
-        String backStr="";                String ans="";
-
-        // 找出运算符位置
-        int index,num=0;
-
-        // 前一个数，后一个数
-        int f=0,b=0;
-        if(buffer.indexOf('+')!=-1){
-            index=buffer.indexOf('+');
-
-            // 获取两个值
-            frontStr=buffer.substring(0,index);
-            backStr=buffer.substring(index+1,buffer.length());
-            f = Integer.parseInt(frontStr);
-            b = Integer.parseInt(backStr);
-
-            //运算
-            num=f+b;
-            ans=String.valueOf(num);
-
-            // 显示答案
-            txt2.setText(ans);
-            txt1.setText("");
-        }
-        else if(buffer.indexOf('-')!=-1){
-            index=buffer.indexOf('-');
-
-            // 获取两个值
-            frontStr=buffer.substring(0,index);
-            backStr=buffer.substring(index+1,buffer.length());
-            f = Integer.parseInt(frontStr);
-            b = Integer.parseInt(backStr);
-
-            //运算
-            num=f-b;
-            ans=String.valueOf(num);
-
-            // 显示答案
-            txt2.setText(ans);
-            txt1.setText("");
-        }
-        else if(buffer.indexOf('*')!=-1){
-            index=buffer.indexOf('*');
-
-            // 获取两个值
-            frontStr=buffer.substring(0,index);
-            backStr=buffer.substring(index+1,buffer.length());
-            f = Integer.parseInt(frontStr);
-            b = Integer.parseInt(backStr);
-
-            //运算
-            num=f*b;
-            ans=String.valueOf(num);
-
-            // 显示答案
-            txt2.setText(ans);
-            txt1.setText("");
-        }
-        else if(buffer.indexOf('/')!=-1){
-            index=buffer.indexOf('/');
-
-            // 获取两个值
-            frontStr=buffer.substring(0,index);
-            backStr=buffer.substring(index+1,buffer.length());
-            f = Integer.parseInt(frontStr);
-            b = Integer.parseInt(backStr);
-
-            // 运算特殊情况分母为0
-            if(b == 0){
-                txt2.setText("无穷");
-                txt1.setText("");
-            }else{
-
-                // 运算
-                float _num=f/b;
-                ans=String.valueOf(_num);
-
-                // 显示
-                txt2.setText(ans);
-                txt1.setText("");
-            }
-        }
-        else{
-            // 显示
-            txt2.setText(txt1.getText());
-            txt1.setText("");
-        }
-
-    }
-
-    // 子函数
-    private void SubEval(){
-
-    }
-
     // 加数字
     private String AddNumber(Button source) {
         if((source.getText()+"").equals(".")){
@@ -652,13 +506,7 @@ public class MainActivity extends AppCompatActivity {
             else
                 return txt1.getText()+"";
         }
-        else if( count == 7 && signal != "#"){
-            signal = "#";
-            pointFlag = 0;
-            count = 1;
-            return txt1.getText() + "" + source.getText();
-        }
-        else if( count > 1 && signal != "#"){
+        else if( (count > 1|| count==7) && signal != "#"){
             signal = "#";
             pointFlag = 0;
             count = 1;
@@ -676,13 +524,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /*
-     * ==== AddSignal =========================================
-     *
-     *
-     *
-     * ========================================================
-     */
     private String AddSignal(Button source) {
         // 当最后一个字符不为.时，允许添加运算符
         if (_pointFlag == 0) {
@@ -690,9 +531,9 @@ public class MainActivity extends AppCompatActivity {
             if (signal != "#") {
 
                 // 运算符变换
-                int index = ("" + txt1.getText()).indexOf(signal);
+                int index = ("" + txt1.getText()).length();
                 signal = source.getText() + "";
-                return ("" + txt1.getText()).substring(0, index) + signal;
+                return ("" + txt1.getText()).substring(0, index-1) + signal;
             } else if ((txt1.getText() + "").length() == 0 &&
                     (txt2.getText() + "").length() > 0) {
 
